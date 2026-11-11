@@ -1,0 +1,15 @@
+name: FIH guard
+
+# pull_request_target runs this file from main, not from the pull request.
+# Never add a step here that checks out or runs the pull request's code.
+on:
+  pull_request_target:
+    types: [opened, synchronize, reopened]
+
+permissions:
+  pull-requests: read
+
+jobs:
+  guard:
+    name: Guard
+    uses: FIH-active-projects/fih-ci/.github/workflows/guard.yml@v1
