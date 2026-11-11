@@ -1,0 +1,19 @@
+name: FIH checks
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: fih-checks-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  fih:
+    name: FIH
+    uses: FIH-active-projects/fih-ci/.github/workflows/checks.yml@v1
