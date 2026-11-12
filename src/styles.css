@@ -1075,6 +1075,555 @@ textarea {
   padding-top: 80px;
 }
 
+/* ---------- Task indicators ---------- */
+
+.task-card.is-blocked {
+  border-left: 3px solid var(--warning);
+}
+
+.task-card-indicators {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.badge-blocked {
+  background: var(--warning-soft);
+  color: var(--warning);
+}
+
+.indicator {
+  font-size: 12px;
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+.indicator.complete {
+  color: var(--success);
+}
+
+.inline-badge {
+  margin-left: 8px;
+  vertical-align: middle;
+}
+
+/* ---------- Task form: checklist, dependencies, repeat ---------- */
+
+.checklist {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.checklist li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 4px 6px;
+  border-radius: 6px;
+}
+
+.checklist li:hover {
+  background: var(--surface-2);
+}
+
+.checklist input[type='checkbox'] {
+  flex: none;
+  width: 16px;
+  height: 16px;
+  padding: 0;
+  accent-color: var(--primary);
+  cursor: pointer;
+}
+
+.checklist-title {
+  flex: 1;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.checklist li.is-done .checklist-title {
+  text-decoration: line-through;
+  color: var(--muted);
+}
+
+.inline-add {
+  display: flex;
+  gap: 8px;
+}
+
+.inline-add input {
+  flex: 1;
+}
+
+.input-with-suffix {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.input-with-suffix input {
+  width: 90px;
+  flex: none;
+}
+
+.chips {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  max-width: 100%;
+  padding: 3px 4px 3px 10px;
+  border-radius: 999px;
+  background: var(--warning-soft);
+  color: var(--warning);
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.chip.is-done {
+  background: var(--success-soft);
+  color: var(--success);
+  text-decoration: line-through;
+}
+
+.chip-remove {
+  display: grid;
+  place-items: center;
+  width: 18px;
+  height: 18px;
+  border: none;
+  border-radius: 50%;
+  background: transparent;
+  color: inherit;
+  font-size: 11px;
+  cursor: pointer;
+}
+
+.chip-remove:hover {
+  background: rgba(0, 0, 0, 0.08);
+}
+
+/* ---------- Search language help ---------- */
+
+.toolbar:has(+ .search-help) {
+  margin-bottom: 8px;
+}
+
+.search-help {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  margin: 0 0 18px;
+  color: var(--muted);
+}
+
+.search-help.has-error {
+  color: var(--danger);
+}
+
+.query-chip {
+  padding: 1px 8px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--surface);
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.query-chip:hover {
+  border-color: var(--primary);
+  color: var(--primary);
+}
+
+/* ---------- Sidebar extras ---------- */
+
+.palette-trigger {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 7px 10px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface-2);
+  color: var(--muted);
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.palette-trigger:hover {
+  border-color: var(--primary);
+}
+
+kbd {
+  padding: 1px 6px;
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  background: var(--surface);
+  font-family: inherit;
+  font-size: 11px;
+}
+
+.history-controls {
+  display: flex;
+  gap: 6px;
+  margin-top: auto;
+}
+
+.history-controls .btn {
+  flex: 1;
+}
+
+/* ---------- Command palette ---------- */
+
+.palette-backdrop {
+  place-items: start center;
+  padding-top: 12vh;
+}
+
+.palette {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 600px;
+  max-height: 70vh;
+  overflow: hidden;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  box-shadow: var(--shadow-lg);
+  animation: pop-in 0.15s ease;
+}
+
+.palette-input {
+  padding: 16px 20px;
+  border: none;
+  border-bottom: 1px solid var(--border);
+  background: transparent;
+  font-size: 17px;
+  outline: none;
+}
+
+.palette-results {
+  flex: 1;
+  margin: 0;
+  padding: 6px;
+  list-style: none;
+  overflow-y: auto;
+}
+
+.palette-section {
+  padding: 10px 12px 4px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.palette-option {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.palette-option.active {
+  background: var(--primary-soft);
+  color: var(--primary);
+}
+
+.palette-label {
+  flex: 1;
+}
+
+.palette-label mark {
+  background: none;
+  color: var(--primary);
+  font-weight: 700;
+}
+
+.palette-hint {
+  font-size: 12px;
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+.palette-empty {
+  padding: 24px;
+  text-align: center;
+  color: var(--muted);
+}
+
+.palette-footer {
+  display: flex;
+  gap: 16px;
+  padding: 8px 16px;
+  border-top: 1px solid var(--border);
+}
+
+/* ---------- Toasts ---------- */
+
+.toasts {
+  position: fixed;
+  right: 20px;
+  bottom: 20px;
+  z-index: 200;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-width: min(420px, calc(100vw - 40px));
+}
+
+.toast {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 10px 10px 16px;
+  border-radius: 10px;
+  background: var(--text);
+  color: var(--bg);
+  box-shadow: var(--shadow-lg);
+  font-size: 14px;
+  animation: pop-in 0.18s ease;
+}
+
+.toast > span {
+  flex: 1;
+}
+
+.toast-error {
+  background: var(--danger);
+  color: #fff;
+}
+
+:root[data-theme='dark'] .toast-error {
+  color: #2b0b0b;
+}
+
+.toast .icon-button {
+  color: inherit;
+  opacity: 0.7;
+}
+
+.toast .icon-button:hover {
+  background: rgba(255, 255, 255, 0.15);
+  color: inherit;
+  opacity: 1;
+}
+
+.toast-action {
+  border-color: transparent;
+  background: rgba(255, 255, 255, 0.15);
+  color: inherit;
+}
+
+:root[data-theme='dark'] .toast:not(.toast-error) .toast-action,
+:root[data-theme='dark'] .toast:not(.toast-error) .icon-button:hover {
+  background: rgba(0, 0, 0, 0.1);
+}
+
+/* ---------- Calendar ---------- */
+
+.calendar-toolbar {
+  align-items: center;
+}
+
+.calendar-title {
+  font-size: 18px;
+  margin-left: 6px;
+}
+
+.calendar-layout {
+  display: grid;
+  grid-template-columns: 1fr 240px;
+  gap: 18px;
+  align-items: start;
+}
+
+.calendar {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  overflow: hidden;
+  background: var(--border);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  gap: 1px;
+}
+
+.calendar-weekday {
+  padding: 8px 10px;
+  background: var(--surface-2);
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--muted);
+}
+
+.calendar-day {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-height: 112px;
+  padding: 6px;
+  background: var(--surface);
+  transition: background 0.15s;
+}
+
+.calendar-day.is-outside {
+  background: var(--surface-2);
+}
+
+.calendar-day.is-outside .calendar-date {
+  color: var(--muted);
+  opacity: 0.6;
+}
+
+.calendar-day.drag-over,
+.calendar-unscheduled.drag-over {
+  background: var(--primary-soft);
+  outline: 2px dashed var(--primary);
+  outline-offset: -2px;
+}
+
+.calendar-day-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.calendar-date {
+  display: grid;
+  place-items: center;
+  min-width: 24px;
+  height: 24px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.calendar-day.is-today .calendar-date {
+  background: var(--primary);
+  color: #fff;
+}
+
+.calendar-add {
+  width: 22px;
+  height: 22px;
+  opacity: 0;
+  transition: opacity 0.15s;
+}
+
+.calendar-day:hover .calendar-add,
+.calendar-add:focus-visible {
+  opacity: 1;
+}
+
+.calendar-tasks {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.calendar-task {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  width: 100%;
+  padding: 3px 6px;
+  border: 1px solid transparent;
+  border-radius: 5px;
+  background: var(--surface-2);
+  font-size: 12px;
+  font-weight: 500;
+  text-align: left;
+  cursor: pointer;
+}
+
+.calendar-task[draggable='true'] {
+  cursor: grab;
+}
+
+.calendar-task:hover {
+  border-color: var(--primary);
+}
+
+.calendar-task .dot {
+  width: 7px;
+  height: 7px;
+}
+
+.calendar-task.is-done {
+  color: var(--muted);
+  text-decoration: line-through;
+}
+
+.calendar-task.is-overdue {
+  background: var(--danger-soft);
+  color: var(--danger);
+}
+
+.calendar-task.is-projected {
+  border: 1px dashed var(--border);
+  background: transparent;
+  color: var(--muted);
+}
+
+.calendar-more {
+  align-self: flex-start;
+  padding: 0 4px;
+  border: none;
+  background: none;
+  color: var(--primary);
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.calendar-unscheduled {
+  position: sticky;
+  top: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-height: 200px;
+}
+
+.calendar-unscheduled h2 {
+  font-size: 15px;
+}
+
+.calendar-unscheduled .calendar-task {
+  padding: 6px 8px;
+  font-size: 13px;
+}
+
+.calendar-empty {
+  padding: 16px 0;
+  text-align: center;
+}
+
 /* ---------- Responsive ---------- */
 
 @media (max-width: 860px) {
@@ -1116,5 +1665,22 @@ textarea {
 
   .field-row {
     flex-direction: column;
+  }
+
+  .palette-trigger,
+  .history-controls {
+    display: none;
+  }
+
+  .calendar-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .calendar-day {
+    min-height: 80px;
+  }
+
+  .calendar-unscheduled {
+    position: static;
   }
 }

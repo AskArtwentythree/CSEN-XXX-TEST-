@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useReducer, type ReactNode } from 'react';
 import type { AppState } from '../types';
 import { StoreContext } from './context';
-import { reducer } from './reducer';
+import { createHistory, historyReducer } from './history';
 import { loadState, saveState } from './storage';
 
 interface StoreProviderProps {
@@ -10,12 +10,20 @@ interface StoreProviderProps {
 }
 
 export function StoreProvider({ children, initialState }: StoreProviderProps) {
-  const [state, dispatch] = useReducer(reducer, initialState, (init) => init ?? loadState());
+  const [history, dispatch] = useReducer(historyReducer, initialState, (init) =>
+    createHistory(init ?? loadState()),
+  );
+  const state = history.present;
 
   useEffect(() => {
     saveState(state);
   }, [state]);
 
-  const value = useMemo(() => ({ state, dispatch }), [state]);
+  const canUndo = history.past.length > 0;
+  const canRedo = history.future.length > 0;
+  const value = useMemo(
+    () => ({ state, dispatch, canUndo, canRedo }),
+    [state, canUndo, canRedo],
+  );
   return <StoreContext.Provider value={value}>{children}</StoreContext.Provider>;
 }

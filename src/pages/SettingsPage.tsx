@@ -2,7 +2,7 @@ import { useRef, useState, type ChangeEvent } from 'react';
 import { PageHeader } from '../components/PageHeader';
 import { actions } from '../store/actions';
 import { createSeedState } from '../store/seed';
-import { isAppState } from '../store/storage';
+import { parseAppState } from '../store/storage';
 import { useStore } from '../store/useStore';
 import { THEMES, type Theme } from '../types';
 import { todayISO } from '../utils/date';
@@ -32,8 +32,8 @@ export function SettingsPage() {
     event.target.value = '';
     if (!file) return;
     try {
-      const parsed: unknown = JSON.parse(await file.text());
-      if (!isAppState(parsed)) throw new Error('invalid');
+      const parsed = parseAppState(JSON.parse(await file.text()));
+      if (!parsed) throw new Error('invalid');
       if (!window.confirm('Replace all current data with this backup?')) return;
       dispatch(actions.replaceState(parsed));
       setNotice({

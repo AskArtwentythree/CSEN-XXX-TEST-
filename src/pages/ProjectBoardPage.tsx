@@ -5,7 +5,8 @@ import { ProgressBar } from '../components/ProgressBar';
 import { ProjectModal } from '../components/ProjectModal';
 import { TaskCard } from '../components/TaskCard';
 import { TaskModal } from '../components/TaskModal';
-import { actions } from '../store/actions';
+import { useTaskActions } from '../hooks/useTaskActions';
+import { getBlockers } from '../store/dependencies';
 import { getProjectProgress, sortTasks } from '../store/selectors';
 import { useStore } from '../store/useStore';
 import { STATUSES, STATUS_LABELS, type Task, type TaskStatus } from '../types';
@@ -20,7 +21,8 @@ type BoardModal =
 export function ProjectBoardPage() {
   const { projectId } = useParams();
   const navigate = useNavigate();
-  const { state, dispatch } = useStore();
+  const { state } = useStore();
+  const { setStatus, deleteProject } = useTaskActions();
   const [modal, setModal] = useState<BoardModal>(null);
   const [dragOver, setDragOver] = useState<TaskStatus | null>(null);
 
@@ -39,13 +41,13 @@ export function ProjectBoardPage() {
     setDragOver(null);
     const taskId = event.dataTransfer.getData('text/plain');
     const task = state.tasks.find((t) => t.id === taskId);
-    if (task && task.status !== status) dispatch(actions.moveTask(task.id, status));
+    if (task) setStatus(task, status);
   }
 
   function handleDeleteProject() {
     if (!project) return;
     if (window.confirm(`Delete "${project.name}" and all of its tasks?`)) {
-      dispatch(actions.deleteProject(project.id));
+      deleteProject(project);
       navigate('/projects');
     }
   }
@@ -122,6 +124,11 @@ export function ProjectBoardPage() {
                     key={task.id}
                     task={task}
                     today={today}
+                    blockedBy={
+                      task.status === 'done'
+                        ? []
+                        : getBlockers(task, state.tasks).map((t) => t.title)
+                    }
                     onOpen={() => setModal({ kind: 'task', task })}
                   />
                 ))}

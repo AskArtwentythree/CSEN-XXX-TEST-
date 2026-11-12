@@ -1,10 +1,11 @@
 import { describe, expect, it } from 'vitest';
 import { createSeedState } from './seed';
-import { STORAGE_KEY, isAppState, loadState, saveState } from './storage';
+import { STORAGE_KEY, loadState, parseAppState, saveState } from './storage';
 
-describe('isAppState', () => {
+describe('parseAppState', () => {
   it('accepts valid state', () => {
-    expect(isAppState(createSeedState('2026-03-10'))).toBe(true);
+    const state = createSeedState('2026-03-10');
+    expect(parseAppState(state)).toEqual(state);
   });
 
   it.each([
@@ -13,7 +14,53 @@ describe('isAppState', () => {
     ['bad theme', { projects: [], tasks: [], theme: 'neon' }],
     ['bad task status', { projects: [], tasks: [{ id: '1', projectId: 'p', title: 't', description: '', status: 'nope', priority: 'low', dueDate: null, tags: [] }], theme: 'light' }],
   ])('rejects %s', (_label, value) => {
-    expect(isAppState(value)).toBe(false);
+    expect(parseAppState(value)).toBeNull();
+  });
+});
+
+describe('parseAppState migration', () => {
+  const v1Task = {
+    id: 'a',
+    projectId: 'p',
+    title: 'Old task',
+    description: '',
+    status: 'todo',
+    priority: 'low',
+    dueDate: null,
+    tags: [],
+    createdAt: '',
+    updatedAt: '',
+  };
+  const project = { id: 'p', name: 'P', description: '', color: '#000', createdAt: '' };
+
+  it('fills in fields that older saves do not have', () => {
+    const parsed = parseAppState({ projects: [project], tasks: [v1Task], theme: 'light' });
+    expect(parsed?.tasks[0]).toMatchObject({ subtasks: [], dependsOn: [], recurrence: null });
+  });
+
+  it('drops dangling and cyclic dependencies from hand-edited backups', () => {
+    const parsed = parseAppState({
+      projects: [project],
+      tasks: [
+        { ...v1Task, id: 'a', dependsOn: ['b', 'ghost'] },
+        { ...v1Task, id: 'b', dependsOn: ['a'] },
+      ],
+      theme: 'light',
+    });
+    expect(parsed?.tasks.map((t) => t.dependsOn)).toEqual([['b'], []]);
+  });
+
+  it('rejects malformed new fields', () => {
+    expect(
+      parseAppState({
+        projects: [project],
+        tasks: [{ ...v1Task, recurrence: { frequency: 'yearly', interval: 1 } }],
+        theme: 'light',
+      }),
+    ).toBeNull();
+    expect(
+      parseAppState({ projects: [project], tasks: [{ ...v1Task, subtasks: [{ id: 1 }] }], theme: 'light' }),
+    ).toBeNull();
   });
 });
 
