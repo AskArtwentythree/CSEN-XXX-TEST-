@@ -12,4 +12,4 @@ permissions:
 jobs:
   guard:
     name: Guard
-    uses: FIH-active-projects/fih-ci/.github/workflows/guard.yml@v1
+    uses: FIH-active-projects/fih-ci/.github/workflows/guard.yml@main

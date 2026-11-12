@@ -68,6 +68,17 @@ Saved data and backups from before checklists, dependencies and recurrence were 
 
 Unit tests cover the reducer, undo history, dependency graph, selectors, persistence and migration, recurrence, the search language, fuzzy matching and other utilities; component tests (React Testing Library) cover the task form and the main user flows: navigating, creating projects and tasks, filtering, completing tasks, deleting projects, and switching themes.
 
-## CI
+## CI/CD
 
-`.github/workflows/ci.yml` runs lint, type-check, tests and the production build on every push to `main` and on pull requests.
+`.github/workflows/ci.yml` runs on every pull request and every push to `main`:
+
+1. **Lint & typecheck**, **Test** and **Build** run in parallel. The build uses the GitHub Pages subpath (`--base=/<repo>/`) and is uploaded as an artifact you can download from the run.
+2. **Deploy to GitHub Pages** runs only on `main`, and only after all three jobs pass.
+
+Superseded pull-request runs are cancelled automatically. Node's version comes from `.nvmrc`.
+
+One-time setup: in the repository's **Settings → Pages**, set **Source** to **GitHub Actions**. The site is then published at `https://<owner>.github.io/<repo>/`.
+
+Dependabot (`.github/dependabot.yml`) opens weekly update PRs for npm packages (with minor and patch dev-dependency bumps grouped into one PR) and for the GitHub Actions used in the workflows.
+
+To build locally the same way CI does: `npm run build -- --base=/CSEN-XXX-TEST-/`, then `npx vite preview --base=/CSEN-XXX-TEST-/`.
