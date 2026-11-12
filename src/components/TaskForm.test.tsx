@@ -44,6 +44,9 @@ describe('TaskForm', () => {
       priority: 'high',
       dueDate: null,
       tags: ['infra', 'ops'],
+      subtasks: [],
+      dependsOn: [],
+      recurrence: null,
     });
   });
 

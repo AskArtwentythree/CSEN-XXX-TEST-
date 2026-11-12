@@ -4,7 +4,8 @@ import { PriorityBadge, StatusBadge } from '../components/Badges';
 import { EmptyState } from '../components/EmptyState';
 import { PageHeader } from '../components/PageHeader';
 import { TaskModal } from '../components/TaskModal';
-import { actions } from '../store/actions';
+import { useTaskActions } from '../hooks/useTaskActions';
+import { getBlockers } from '../store/dependencies';
 import {
   SORT_KEYS,
   SORT_LABELS,
@@ -26,9 +27,14 @@ import {
 } from '../types';
 import { describeDue, todayISO } from '../utils/date';
 import { oneOf } from '../utils/params';
+import { parseQuery } from '../utils/query';
+import { describeRecurrence } from '../utils/recurrence';
+
+const QUERY_EXAMPLES = ['is:overdue', 'is:blocked', 'priority:high', 'due:<7d', '-is:done', '#bug'];
 
 export function TasksPage() {
-  const { state, dispatch } = useStore();
+  const { state } = useStore();
+  const { setStatus } = useTaskActions();
   const [params, setParams] = useSearchParams();
   const [modal, setModal] = useState<{ task?: Task } | null>(null);
   const today = todayISO();
@@ -47,7 +53,11 @@ export function TasksPage() {
     filters.priority !== 'all' ||
     filters.projectId !== 'all';
 
-  const visible = sortTasks(filterTasks(state.tasks, filters), sort);
+  const visible = sortTasks(
+    filterTasks(state.tasks, filters, { today, projects: state.projects }),
+    sort,
+  );
+  const queryErrors = parseQuery(filters.query).errors;
   const projectById = new Map(state.projects.map((p) => [p.id, p]));
 
   function setParam(key: string, value: string, defaultValue = 'all') {
@@ -77,7 +87,8 @@ export function TasksPage() {
         <input
           type="search"
           className="toolbar-search"
-          placeholder="Search title, description or #tag"
+          placeholder="Search, or filter with is:overdue priority:high #tag due:<7d"
+          aria-describedby="search-help"
           aria-label="Search tasks"
           value={filters.query}
           onChange={(e) => setParam('q', e.target.value, '')}
@@ -139,6 +150,28 @@ export function TasksPage() {
         )}
       </div>
 
+      <p id="search-help" className={`search-help small ${queryErrors.length ? 'has-error' : ''}`}>
+        {queryErrors.length > 0 ? (
+          queryErrors.join(' · ')
+        ) : (
+          <>
+            Try{' '}
+            {QUERY_EXAMPLES.map((example) => (
+              <button
+                key={example}
+                type="button"
+                className="query-chip"
+                onClick={() =>
+                  setParam('q', [filters.query.trim(), example].filter(Boolean).join(' '), '')
+                }
+              >
+                {example}
+              </button>
+            ))}
+          </>
+        )}
+      </p>
+
       {visible.length === 0 ? (
         <EmptyState
           title={hasFilters ? 'No matching tasks' : 'No tasks yet'}
@@ -173,13 +206,28 @@ export function TasksPage() {
                         type="checkbox"
                         aria-label={`Mark "${task.title}" as done`}
                         checked={task.status === 'done'}
-                        onChange={(e) =>
-                          dispatch(actions.moveTask(task.id, e.target.checked ? 'done' : 'todo'))
-                        }
+                        onChange={(e) => setStatus(task, e.target.checked ? 'done' : 'todo')}
                       />
                     </td>
                     <td>
                       <span className="task-title">{task.title}</span>
+                      {task.status !== 'done' && getBlockers(task, state.tasks).length > 0 && (
+                        <span className="badge badge-blocked inline-badge">Blocked</span>
+                      )}
+                      {task.subtasks.length > 0 && (
+                        <span className="indicator inline-badge">
+                          ☑ {task.subtasks.filter((st) => st.done).length}/{task.subtasks.length}
+                        </span>
+                      )}
+                      {task.recurrence && (
+                        <span
+                          className="indicator inline-badge"
+                          title={describeRecurrence(task.recurrence)}
+                          aria-label={describeRecurrence(task.recurrence)}
+                        >
+                          ↻
+                        </span>
+                      )}
                       {task.tags.length > 0 && (
                         <span className="tags inline">
                           {task.tags.map((tag) => (

@@ -4,13 +4,14 @@ import { EmptyState } from '../components/EmptyState';
 import { PageHeader } from '../components/PageHeader';
 import { ProgressBar } from '../components/ProgressBar';
 import { ProjectModal } from '../components/ProjectModal';
-import { actions } from '../store/actions';
+import { useTaskActions } from '../hooks/useTaskActions';
 import { getProjectProgress } from '../store/selectors';
 import { useStore } from '../store/useStore';
 import type { Project } from '../types';
 
 export function ProjectsPage() {
-  const { state, dispatch } = useStore();
+  const { state } = useStore();
+  const { deleteProject } = useTaskActions();
   const [modal, setModal] = useState<{ project?: Project } | null>(null);
 
   function handleDelete(project: Project) {
@@ -18,7 +19,7 @@ export function ProjectsPage() {
     const message = count
       ? `Delete "${project.name}" and its ${count} task${count === 1 ? '' : 's'}?`
       : `Delete "${project.name}"?`;
-    if (window.confirm(message)) dispatch(actions.deleteProject(project.id));
+    if (window.confirm(message)) deleteProject(project);
   }
 
   return (

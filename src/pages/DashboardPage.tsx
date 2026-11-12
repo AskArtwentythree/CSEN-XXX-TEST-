@@ -75,6 +75,7 @@ export function DashboardPage() {
         <StatCard label="In progress" value={stats.inProgress} />
         <StatCard label="Due this week" value={stats.dueThisWeek} />
         <StatCard label="Overdue" value={stats.overdue} tone={stats.overdue ? 'danger' : 'default'} />
+        <StatCard label="Blocked" value={stats.blocked} hint="Waiting on other tasks" />
       </section>
 
       <div className="dashboard-grid">

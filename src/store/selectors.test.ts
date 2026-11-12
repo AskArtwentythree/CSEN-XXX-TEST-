@@ -16,6 +16,9 @@ function makeTask(overrides: Partial<Task>): Task {
     priority: 'medium',
     dueDate: null,
     tags: [],
+    subtasks: [],
+    dependsOn: [],
+    recurrence: null,
     createdAt: '2026-01-01T00:00:00.000Z',
     updatedAt: '2026-01-01T00:00:00.000Z',
     ...overrides,
@@ -48,6 +51,7 @@ describe('getDashboardStats', () => {
       done: 2,
       inProgress: 2,
       overdue: 1,
+      blocked: 1,
       dueThisWeek: 4,
     });
   });

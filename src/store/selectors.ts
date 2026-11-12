@@ -1,5 +1,7 @@
-import type { Priority, Task, TaskStatus } from '../types';
-import { addDays } from '../utils/date';
+import type { Priority, Project, Task, TaskStatus } from '../types';
+import { addDays, todayISO } from '../utils/date';
+import { matchesQuery, parseQuery, type QueryContext } from '../utils/query';
+import { isBlocked } from './dependencies';
 
 export type SortKey = 'dueDate' | 'priority' | 'createdAt' | 'title';
 export const SORT_KEYS: SortKey[] = ['dueDate', 'priority', 'createdAt', 'title'];
@@ -48,6 +50,7 @@ export function getDashboardStats(tasks: Task[], today: string) {
     done: tasks.length - open.length,
     inProgress: tasks.filter((t) => t.status === 'in_progress').length,
     overdue: open.filter((t) => isOverdue(t, today)).length,
+    blocked: open.filter((t) => isBlocked(t, tasks)).length,
     dueThisWeek: open.filter((t) => t.dueDate !== null && t.dueDate >= today && t.dueDate <= weekEnd)
       .length,
   };
@@ -62,17 +65,24 @@ export function getUpcomingTasks(tasks: Task[], today: string, days = 7): Task[]
   );
 }
 
-export function filterTasks(tasks: Task[], filters: TaskFilters): Task[] {
-  const query = filters.query.trim().toLowerCase();
+/** `filters.query` uses the search language described in `utils/query.ts`. */
+export function filterTasks(
+  tasks: Task[],
+  filters: TaskFilters,
+  context: { today?: string; projects?: Project[] } = {},
+): Task[] {
+  const query = parseQuery(filters.query);
+  const ctx: QueryContext = {
+    today: context.today ?? todayISO(),
+    projects: context.projects ?? [],
+    allTasks: tasks,
+  };
   return tasks.filter(
     (t) =>
       (filters.status === 'all' || t.status === filters.status) &&
       (filters.priority === 'all' || t.priority === filters.priority) &&
       (filters.projectId === 'all' || t.projectId === filters.projectId) &&
-      (!query ||
-        t.title.toLowerCase().includes(query) ||
-        t.description.toLowerCase().includes(query) ||
-        t.tags.some((tag) => tag.includes(query))),
+      matchesQuery(t, query, ctx),
   );
 }
 

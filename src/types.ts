@@ -10,6 +10,20 @@ export interface Project {
   createdAt: string;
 }
 
+export interface Subtask {
+  id: string;
+  title: string;
+  done: boolean;
+}
+
+export type RecurrenceFrequency = 'daily' | 'weekly' | 'monthly';
+
+export interface Recurrence {
+  frequency: RecurrenceFrequency;
+  /** Repeat every `interval` days / weeks / months. Always >= 1. */
+  interval: number;
+}
+
 export interface Task {
   id: string;
   projectId: string;
@@ -20,6 +34,10 @@ export interface Task {
   /** Local calendar date in `YYYY-MM-DD` form. */
   dueDate: string | null;
   tags: string[];
+  subtasks: Subtask[];
+  /** Ids of tasks that must be done before this one can be completed. */
+  dependsOn: string[];
+  recurrence: Recurrence | null;
   createdAt: string;
   updatedAt: string;
 }
@@ -41,6 +59,14 @@ export const STATUS_LABELS: Record<TaskStatus, string> = {
   todo: 'To do',
   in_progress: 'In progress',
   done: 'Done',
+};
+
+export const RECURRENCE_FREQUENCIES: RecurrenceFrequency[] = ['daily', 'weekly', 'monthly'];
+
+export const RECURRENCE_UNITS: Record<RecurrenceFrequency, [singular: string, plural: string]> = {
+  daily: ['day', 'days'],
+  weekly: ['week', 'weeks'],
+  monthly: ['month', 'months'],
 };
 
 export const PRIORITY_LABELS: Record<Priority, string> = {
